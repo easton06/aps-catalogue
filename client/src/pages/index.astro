@@ -1,0 +1,68 @@
+---
+import ProfileCover from "../component/ProfileCover.astro";
+---
+
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="viewport" content="width=device-width" />
+		<meta name="generator" content={Astro.generator} />
+		<title>Aluminium Profile System Catalogue</title>
+	</head>
+	<body class="text-xs font-sans">
+		<table class="w-full">
+				<div id="pageHeader" class="print:static sticky top-0">
+					<img src="header.jpg" alt="">
+				</div>
+			<tbody>
+				<ProfileCover />
+			</tbody>
+		</table>
+	</body>
+</html>
+
+<style is:global>
+ 	@font-face {
+    font-family: "Josefin Sans";
+    src: url("Josefin Sans-Regular.ttf") format("truetype");
+  }
+
+  @font-face {
+    font-family: "Helvetica";
+    src: url("Helvetica Neue Medium Extended.otf") format("opentype");
+  }
+
+  @font-face {
+    font-family: "Angkor";
+    src: url("Angkor-Regular.ttf") format("truetype");
+  }
+
+  @font-face {
+    font-family: "Croissant";
+    src: url("Croissant One-Regular.ttf") format("truetype");
+  }
+
+  @font-face {
+    font-family: "Lora";
+    src: url("Lora-Regular.ttf") format("truetype");
+  }
+
+	:root {
+		scroll-behavior: smooth;
+	}
+
+	@page {
+		size: 210mm 297mm;
+		margin: 0 0 7mm;
+	}
+	
+	td {
+		padding: 0;
+	}
+
+	#pageHeader {
+		display: table-header-group;
+	}
+
+</style>
