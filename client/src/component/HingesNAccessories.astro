@@ -1,0 +1,57 @@
+---
+import Table from "./Table.astro";
+
+const fetchedData = await fetch("http://localhost:5555/aps/Panel%20Hinges%20&%20Accessories").then(response => response.json())
+
+---
+
+{
+  fetchedData.status === "ok"? 
+    fetchedData.value.slice(1).map((entry: string[], i : number) => (
+      <tr>
+        <td class={`break-inside-avoid-page ${i < fetchedData.value.length - 1 ? "pb-4" : ""}`}>
+          <div id={entry[0]} class="bg-indigo-900 py-3 px-12 text-white text-lg font-light font-display border-b-4 border-b-indigo-100">
+            <h1>{entry[0]} </h1>
+          </div>
+          <div class="px-12 py-3 grid grid-cols-2">
+            <div class="flex justify-center items-start flex-wrap gap-3">
+              {entry[4].split(", ").map((img : string, i : number) => 
+                <img class={`object-center rounded-xl outline outline-2 outline-indigo-900 h-40 ${ i === 0 && entry[4].length % 2 === 1 ? "w-full" : "w-40"} object-contain bg-white flex-grow`} src={"https://drive.google.com/uc?export=view&id=" + img} alt={entry[0] + " Image"}>
+              )}
+            </div>
+            <div class="px-2">
+              <div>
+                <Table sheet={entry[0]} />
+              </div>
+              <div class="pt-2 px-3">
+                <div class="py-2 grid grid-cols-2">
+                  <div class="flex flex-wrap items-center">
+                    Colour: {entry[3].split(", ").map((s: string) => (
+                      <div class={`${s === "Black"? "bg-black" : "bg-slate-400"}  text-white mx-1 py-1 px-2 rounded-full flex-shrink-0`}>
+                        {s}  
+                      </div>
+                    ))}
+                  </div>
+                  <div class="flex flex-wrap items-center">
+                      Material: {entry[2].split(", ").map((s: string) => (
+                        <div class={`text-white py-1 mx-1 px-2 rounded-full ${s === "Nylon"? "bg-black" : "bg-slate-400"} flex-shrink-0`}>
+                          {s}
+                        </div>
+                      ))} 
+                  </div>
+                </div>
+                {entry[1].split("\n").map((s: string) => (
+                  <p class="pb-1">
+                      {s}
+                  </p>
+                ))}
+              </div>
+            </div>
+          </div>
+          
+        </td>
+      </tr>
+    ))
+    : 
+    <div>Error: {fetchedData.value}</div>
+}

@@ -10,7 +10,10 @@ const app = express();
 app.use(express.json());
 
 // If modifying these scopes, delete token.json.
-const SCOPES = ["https://www.googleapis.com/auth/spreadsheets.readonly"];
+const SCOPES = [
+	"https://www.googleapis.com/auth/spreadsheets.readonly",
+	"https://www.googleapis.com/auth/drive.metadata.readonly",
+];
 // The file token.json stores the user's access and refresh tokens, and is
 // created automatically when the authorization flow completes for the first
 // time.
@@ -76,46 +79,125 @@ async function authorize() {
  * @param {google.auth.OAuth2} auth The authenticated Google OAuth client.
  * @param {string} sheet The sheet to extract data range from
  * @param {string} col The last alphabetic column of the extracted data range
+ * @returns {any[][]}
  */
-async function listSheet(auth, sheet) {
+async function listSheet(auth, sheet, col) {
 	const sheets = google.sheets({ version: "v4", auth });
 	const res = await sheets.spreadsheets.values.get({
 		spreadsheetId: "1rbRfMUygG0GbeTRiIdTd7qSXQtifdIDRndOC0LO6GBw",
-		range: `${sheet}!A1:J`,
+		range: `${sheet}!A1:${col ?? "L"}`,
 	});
 	const rows = res.data.values;
 	if (!rows || rows.length === 0) {
 		console.log("No data found.");
-		return;
+		return [[]];
 	}
 	return rows;
 }
 
+/**
+ * Lists the names and IDs of a specified folder with ID
+ * @param {OAuth2Client} authClient An authorized OAuth2 client.
+ * @param {string} folderId id of the folder of the files parents to
+ * @returns {drive_v3.Schema$File[] | undefined}
+ */
+async function listFiles(authClient, folderId) {
+	const drive = google.drive({ version: "v3", auth: authClient });
+	const res = await drive.files.list({
+		fields: "nextPageToken, files(id, name)",
+		q: `'${folderId}' in parents and trashed = false`,
+	});
+	const files = res.data.files;
+	if (files.length === 0) {
+		console.log("No files found.");
+		return undefined;
+	} else {
+		return files;
+	}
+}
+
 authorize()
 	.then((auth) => {
-		const port = 5555;
+		listFiles(auth, "1AU0YvPpzdqHpiHblPfHrhEA-B4soIB--").then(async (picFolders) => {
+			console.log(picFolders);
+			if (picFolders !== undefined) {
+				var picFiles = [];
+				await Promise.all(
+					picFolders.map(async (curr) => {
+						await listFiles(auth, curr.id).then((files) => {
+							picFiles = files.length
+								? picFiles.length
+									? [...files, ...picFiles]
+									: [...files]
+								: picFiles.length
+								? [...picFiles]
+								: [];
+						});
+					})
+				);
 
-		app.get("/aps/:sheet", (req, res) => {
-			listSheet(auth, req.params.sheet)
-				.then((data) => {
-					console.log("--------------------------------------------------");
-					for (let i = 0; i < data.length; i++) {
-						for (let j = 0; j < data[i].length; j++) {
-							if (data[i][j] === "") data[i][j] = null;
-						}
-						console.log(data[i]);
-					}
-					console.log("--------------------------------------------------");
+				const picObject = picFiles.reduce((previousObject, currentObject) => {
+					return Object.assign(previousObject, {
+						[currentObject.name]: currentObject.id,
+					});
+				}, {});
+				console.log(picObject);
+				const port = 5555;
 
-					res.status(200).send({ status: "ok", value: data });
-				})
-				.catch((e) => {
-					res.status(e["code"]).send({ status: "error", value: e.errors[0].message });
+				app.get("/aps/:sheet", (req, res) => {
+					listSheet(auth, req.params.sheet)
+						.then((data) => {
+							for (let i = 0; i < data.length; i++) {
+								for (let j = 0; j < data[i].length; j++) {
+									// convert empty string for json use (json deletes entry with empty string)
+									if (data[i][j] === "") data[i][j] = null;
+									else if (data[i][j].endsWith(".jpg") || data[i][j].endsWith(".png")) {
+										// convert .png and .jpeg entry with google image export id
+										if (data[i][j].includes(",")) {
+											data[i][j] = data[i][j]
+												.split(", ")
+												.map((e) => picObject[e])
+												.join(", ");
+										} else data[i][j] = picObject[data[i][j]];
+									}
+								}
+							}
+							console.log(data);
+
+							res.status(200).send({ status: "ok", value: data });
+						})
+						.catch((e) => {
+							if (e["code"] !== undefined) res.status(e["code"]).send({ status: "error", value: e.errors[0].message });
+							console.error(e);
+						});
 				});
-		});
 
-		app.listen(port, () => {
-			console.log(`app is currently listening on port ${port}`);
+				app.get("/aps/:sheet/:col", (req, res) => {
+					listSheet(auth, req.params.sheet, req.params.col)
+						.then((data) => {
+							for (let i = 0; i < data.length; i++) {
+								for (let j = 0; j < data[i].length; j++) {
+									// convert empty string for json use (json deletes entry with empty string)
+									if (data[i][j] === "") data[i][j] = null;
+									else if (data[i][j].endsWith(".jpg") || data[i][j].endsWith(".png") || data[i][j].endsWith(".webp"))
+										// convert .png and .jpeg entry with google image export id
+										data[i][j] = picObject[data[i][j]];
+								}
+							}
+							console.log(data);
+
+							res.status(200).send({ status: "ok", value: data });
+						})
+						.catch((e) => {
+							if (e["code"] !== undefined) res.status(e["code"]).send({ status: "error", value: e.errors[0].message });
+							console.error(e);
+						});
+				});
+
+				app.listen(port, () => {
+					console.log(`app is currently listening on port ${port}`);
+				});
+			} else console.log("Picture Folders not found");
 		});
 	})
 	.catch(console.error);

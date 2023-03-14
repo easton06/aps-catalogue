@@ -1,7 +1,6 @@
 ---
-const { sheet } = Astro.props;
-const response = await fetch(`http://localhost:5555/aps/${sheet}`);
-const data = await response.json();
+const { raw, sheet, omit_col } = Astro.props;
+const data = raw?? await fetch(`http://localhost:5555/aps/${sheet}`).then((response) =>  response.json());
 
 var rowspans: number[][] = [];
 
@@ -27,9 +26,9 @@ for(let i = 0; i < data.value[0].length; i++) { //working through columns
 		{ data.status === "ok"?
 		data.value.map((row : (string | null)[], i : number) =>  //row
 		<tr>
-			{row.map((entry: (string | null), j) => //column
+			{row.slice(0, omit_col? -1 * (omit_col?? 0) : undefined).map((entry: (string | null), j) => //column
 					entry !== null ?
-					<td class={`${i === 0 ?  "bg-slate-900 text-white" : "bg-white"} text-center border border-slate-100`} rowspan={`${rowspans[j][i]}`}>
+					<td class={`${i === 0 ?  "bg-indigo-900 text-white" : "bg-white"} text-center border border-indigo-100`} rowspan={`${rowspans[j][i]}`}>
 						{entry}
 					</td> : <></>)
 				}

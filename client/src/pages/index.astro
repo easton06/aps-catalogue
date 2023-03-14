@@ -1,24 +1,41 @@
 ---
+import AluminiumProfile from "../component/AluminiumProfile.astro";
+import Chapter from "../component/Chapter.astro";
+import Page from "../component/Page.astro";
 import ProfileCover from "../component/ProfileCover.astro";
+import TableOfContent from "../component/TableOfContent.astro";
+import HingesNAccessories from "../component/HingesNAccessories.astro";
 ---
 
 <html lang="en">
 	<head>
 		<meta charset="utf-8" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<meta name="generator" content={Astro.generator} />
 		<title>Aluminium Profile System Catalogue</title>
 	</head>
 	<body class="text-xs font-sans">
-		<table class="w-full">
-				<div id="pageHeader" class="print:static sticky top-0">
-					<img src="header.jpg" alt="">
-				</div>
-			<tbody>
-				<ProfileCover />
-			</tbody>
-		</table>
+		<Chapter>TABLE OF CONTENT</Chapter>
+		<Page>
+			TABLE OF CONTENT
+			<!-- <TableOfContent slot="content" /> -->
+		</Page>
+		<Chapter>ALUMINIUM PROFILE</Chapter>
+		<Page>
+			ALUMINIUM PROFILE
+			<!-- <AluminiumProfile slot="content" /> -->
+		</Page>
+		<Chapter>PROFILE COVER</Chapter>
+		<Page>
+			PROFILE COVER
+			<!-- <ProfileCover slot="content" /> -->
+		</Page>
+		<Chapter>HINGES & ACCESSORIES</Chapter>
+		<Page>
+			HINGES & ACCESSORIES
+			<!-- <HingesNAccessories slot="content" /> -->
+		</Page>
 	</body>
 </html>
 
@@ -52,17 +69,18 @@ import ProfileCover from "../component/ProfileCover.astro";
 		scroll-behavior: smooth;
 	}
 
-	@page {
+	@page :left {
 		size: 210mm 297mm;
-		margin: 0 0 7mm;
+		margin: 0;
+	}
+
+	@page :right {
+		size: 210mm 297mm;
+		margin: 0;
 	}
 	
 	td {
 		padding: 0;
-	}
-
-	#pageHeader {
-		display: table-header-group;
 	}
 
 </style>

@@ -2,22 +2,24 @@
 import Table from "./Table.astro";
 
 const fetchedData = await fetch("http://localhost:5555/aps/Profile%20Cover").then(response => response.json())
+
 ---
+
 {
   fetchedData.status === "ok"? 
     fetchedData.value.slice(1).map((entry: string[], i : number) => (
-      <tr class="h-full">
-        <td class={`h-full break-inside-avoid-page ${i < fetchedData.value.length - 1 ? "pb-4" : ""}`}>
-          <div id={entry[0]} class="bg-slate-900 py-3 px-12 text-white text-lg font-light font-display border-b-4 border-b-slate-100">
-            {entry[0]}
+      <tr>
+        <td class={`break-inside-avoid-page ${i < fetchedData.value.length - 1 ? "pb-4" : ""}`}>
+          <div id={entry[0]} class="bg-indigo-900 py-3 px-12 text-white text-lg font-light font-display border-b-4 border-b-indigo-100">
+            <h1>{entry[0]} </h1>
           </div>
-          <div class="px-6">
-            <div class="grid grid-cols-3 py-4 px-12 gap-6">
-              <img class="object-right rounded-xl outline outline-2 outline-slate-900 aspect-square w-full object-contain bg-white" src={"ProfileCover/" + entry[4]} alt={entry[0] + " Image"}>
-              <img class="object-right rounded-xl outline outline-2 outline-slate-900 aspect-square w-full object-contain bg-white" src={"ProfileCover/" + entry[5]} alt={entry[0] + " Drawing"}>
-              <img class="object-right rounded-xl outline outline-2 outline-slate-900 aspect-square w-full object-contain bg-white" src={"ProfileCover/" + entry[6]} alt={entry[0] + " Usage"}>
+          <div class="px-12">
+            <div class="grid grid-cols-3 py-4 gap-12">
+              <img class="object-right rounded-xl outline outline-2 outline-indigo-900 aspect-square w-full object-contain bg-white" src={"https://drive.google.com/uc?export=view&id=" + entry[4]} alt={entry[0] + " Image"}>
+              <img class="object-right rounded-xl outline outline-2 outline-indigo-900 aspect-square w-full object-contain bg-white" src={"https://drive.google.com/uc?export=view&id=" + entry[5]} alt={entry[0] + " Drawing"}>
+              <img class="object-right rounded-xl outline outline-2 outline-indigo-900 aspect-square w-full object-contain bg-white" src={"https://drive.google.com/uc?export=view&id=" + entry[6]} alt={entry[0] + " Usage"}>
             </div>
-            <div class="p-2 bg-slate-100 rounded-lg">
+            <div class="p-2 bg-indigo-100 rounded-lg">
               <div class="px-3">
                 <p class="py-1">
                   {entry[1]}

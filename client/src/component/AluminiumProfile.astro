@@ -1,0 +1,21 @@
+---
+import APEntries from "./APEntries.astro";
+
+const fetchedData = await fetch("http://localhost:5555/aps/Aluminium%20Profile").then(response => response.json())
+---
+
+{
+  fetchedData.status === "ok"? 
+      <APEntries name={fetchedData.value[1]}/>
+      <APEntries name={fetchedData.value[2]}/>
+      <APEntries name={fetchedData.value[3]} screenonly/>
+      <APEntries name={fetchedData.value[3]} separate={2} printonly/>
+      <APEntries name={fetchedData.value[4]}/>
+      <APEntries name={fetchedData.value[5]}/>
+      <APEntries name={fetchedData.value[6]}/>
+      <APEntries name={fetchedData.value[7]}/>
+      <APEntries name={fetchedData.value[8]}/>
+      <APEntries name={fetchedData.value[9]}/>
+    : 
+    <div>Error: {fetchedData.value}</div>
+}
