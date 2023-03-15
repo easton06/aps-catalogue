@@ -1,8 +1,8 @@
 ---
+import Image from "./Image.astro";
 import Table from "./Table.astro";
 
 const fetchedData = await fetch("http://localhost:5555/aps/Panel%20Hinges%20&%20Accessories").then(response => response.json())
-
 ---
 
 {
@@ -10,13 +10,13 @@ const fetchedData = await fetch("http://localhost:5555/aps/Panel%20Hinges%20&%20
     fetchedData.value.slice(1).map((entry: string[], i : number) => (
       <tr>
         <td class={`break-inside-avoid-page ${i < fetchedData.value.length - 1 ? "pb-4" : ""}`}>
-          <div id={entry[0]} class="bg-indigo-900 py-3 px-12 text-white text-lg font-light font-display border-b-4 border-b-indigo-100">
+          <div id={entry[0]} class="bg-indigo-800 py-3 px-12 text-white text-lg font-serif border-b-4 border-b-indigo-100">
             <h1>{entry[0]} </h1>
           </div>
           <div class="px-12 py-3 grid grid-cols-2">
             <div class="flex justify-center items-start flex-wrap gap-3">
-              {entry[4].split(", ").map((img : string, i : number) => 
-                <img class={`object-center rounded-xl outline outline-2 outline-indigo-900 h-40 ${ i === 0 && entry[4].length % 2 === 1 ? "w-full" : "w-40"} object-contain bg-white flex-grow`} src={"https://drive.google.com/uc?export=view&id=" + img} alt={entry[0] + " Image"}>
+              {entry[4].split(", ").map((img : string, i : number, arr: string[]) => 
+                <Image entry={img} width={i === 0 && entry[4].split(", ").length % 2 === 1? "20.75rem" : undefined} />
               )}
             </div>
             <div class="px-2">

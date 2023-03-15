@@ -1,6 +1,5 @@
 ---
-let title = '';
-if (Astro.slots.has('default')) title = await Astro.slots.render("default");
+const {title} = Astro.props;
 ---
 <section class="break-after-page">
   <table class="w-full">
@@ -8,14 +7,14 @@ if (Astro.slots.has('default')) title = await Astro.slots.render("default");
       <tr class="w-full">
         <td class="w-full relative">
           <div class="py-8 px-8 z-10 absolute text-white text-lg font-link">
-            {title}
+            {title.toUpperCase()}
           </div>
           <img src="Header.png" alt="header Image">
         </td>
       </tr>
     </thead>
     <tbody >
-      <slot name="content"/>
+      <slot/>
     </tbody>
   </table>	
 </section>

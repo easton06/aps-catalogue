@@ -4,36 +4,77 @@ const data = raw?? await fetch(`http://localhost:5555/aps/${sheet}`).then((respo
 
 var rowspans: number[][] = [];
 
-for(let i = 0; i < data.value[0].length; i++) { //working through columns
-	let span: number[] = [];
-	let row = 1;
-	for(let j = data.value.length - 1; j >= 0; j--) { // counting through rows
-		span = [row, ...span];
-		if(data.value[j][i] === undefined || data.value[j][i] === null) {
-			row++
-		} else {
-			row = 1;
+if (raw !== undefined)
+	for(let i = 0; i < data[0].length; i++) { //working through columns
+		let span: number[] = [];
+		let row = 1;
+		for(let j = data.length - 1; j >= 0; j--) { // counting through rows
+			span = [row, ...span];
+			if(data[j][i] === undefined || data[j][i] === null) {
+				row++
+			} else {
+				row = 1;
+			}
 		}
+		rowspans.push(span)
 	}
-	rowspans.push(span)
-}
+else
+	for(let i = 0; i < data.value[0].length; i++) { //working through columns
+		let span: number[] = [];
+		let row = 1;
+		for(let j = data.value.length - 1; j >= 0; j--) { // counting through rows
+			span = [row, ...span];
+			if(data.value[j][i] === undefined || data.value[j][i] === null) {
+				row++
+			} else {
+				row = 1;
+			}
+		}
+		rowspans.push(span)
+	}
 
 
 ---
 
 <table class="w-full">
 	<tbody>
-		{ data.status === "ok"?
-		data.value.map((row : (string | null)[], i : number) =>  //row
-		<tr>
-			{row.slice(0, omit_col? -1 * (omit_col?? 0) : undefined).map((entry: (string | null), j) => //column
-					entry !== null ?
-					<td class={`${i === 0 ?  "bg-indigo-900 text-white" : "bg-white"} text-center border border-indigo-100`} rowspan={`${rowspans[j][i]}`}>
-						{entry}
-					</td> : <></>)
-				}
-				</tr>)
-				: <div>Error: {data.value}</div>
-			}
+		{ 
+			raw !== undefined ? 
+				data.map((row : (string | null)[], i : number) =>  //row
+					<tr>
+						{
+							row.slice(0, omit_col? -1 * (omit_col?? 0) : undefined).map(
+								(entry: (string | null), j) => //column
+									entry !== null ?
+										<td class={`${i === 0 ?  "bg-indigo-800 text-white" : "bg-white"} text-center border border-indigo-100`} rowspan={`${rowspans[j][i]}`}>
+											{entry}
+										</td> 
+									: 
+										<></>
+							)
+						}
+					</tr>
+				)
+			:
+				data.status === "ok"?
+					data.value.map(
+						(row : (string | null)[], i : number) =>  //row
+							<tr>
+								{
+									row.slice(0, omit_col? -1 * (omit_col?? 0) : undefined).map(
+										(entry: (string | null), j) => //column
+											entry !== null ?
+												<td class={`${i === 0 ?  "bg-indigo-800 text-white" : "bg-white"} text-center border border-indigo-100`} rowspan={`${rowspans[j][i]}`}>
+													{entry}
+												</td> 
+											: 
+												<></>
+									)
+								}
+						</tr>
+					)
+				: 
+				<div>Error: {data.value}</div>
+		}
 	</tbody>
 </table>

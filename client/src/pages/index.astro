@@ -5,6 +5,7 @@ import Page from "../component/Page.astro";
 import ProfileCover from "../component/ProfileCover.astro";
 import TableOfContent from "../component/TableOfContent.astro";
 import HingesNAccessories from "../component/HingesNAccessories.astro";
+import GussetElement from "../component/GussetElement.astro";
 ---
 
 <html lang="en">
@@ -16,25 +17,25 @@ import HingesNAccessories from "../component/HingesNAccessories.astro";
 		<title>Aluminium Profile System Catalogue</title>
 	</head>
 	<body class="text-xs font-sans">
-		<Chapter>TABLE OF CONTENT</Chapter>
-		<Page>
-			TABLE OF CONTENT
-			<!-- <TableOfContent slot="content" /> -->
+		<Chapter title="Table of Content" />
+		<Page title="Table of Content">
+			<!-- <TableOfContent /> -->
 		</Page>
-		<Chapter>ALUMINIUM PROFILE</Chapter>
-		<Page>
-			ALUMINIUM PROFILE
-			<!-- <AluminiumProfile slot="content" /> -->
+		<Chapter title="Aluminium Profile"/>
+		<Page title="Aluminium Profile">
+			<AluminiumProfile />
 		</Page>
-		<Chapter>PROFILE COVER</Chapter>
-		<Page>
-			PROFILE COVER
-			<!-- <ProfileCover slot="content" /> -->
+		<Chapter title="Profile Cover"/>
+		<Page title="Profile Cover">
+			<ProfileCover />
 		</Page>
-		<Chapter>HINGES & ACCESSORIES</Chapter>
-		<Page>
-			HINGES & ACCESSORIES
-			<!-- <HingesNAccessories slot="content" /> -->
+		<Chapter title="Panel Hinges & Accessories"/>
+		<Page title="Panel Hinges & Accessories">
+			<HingesNAccessories />
+		</Page>
+		<Chapter title="Gusset Elements"/>
+		<Page title="Gusset Elements">
+			<!-- <GussetElement /> -->
 		</Page>
 	</body>
 </html>
@@ -69,12 +70,16 @@ import HingesNAccessories from "../component/HingesNAccessories.astro";
 		scroll-behavior: smooth;
 	}
 
-	@page :left {
+	@page {
 		size: 210mm 297mm;
-		margin: 0;
+		margin: 0 0 7mm;
 	}
 
-	@page :right {
+	.chapter {
+		page: chapter;
+	}
+
+	@page chapter {
 		size: 210mm 297mm;
 		margin: 0;
 	}

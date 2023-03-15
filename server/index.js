@@ -144,6 +144,18 @@ authorize()
 				console.log(picObject);
 				const port = 5555;
 
+				/**
+				 * convert .png and .jpeg entry with google image export id
+				 * e.g. RBN20_img.jpg(PS20_RBNS4-6) -> {export_id}(PS20_RBNS4-6)
+				 * @param {string} s the entry to convert
+				 * @returns {string} picObject
+				 */
+				function getPicObject(s) {
+					const b = s.indexOf("(");
+					if (b >= 0) return picObject[s.slice(0, b)] + s.slice(b);
+					else return picObject[s];
+				}
+
 				app.get("/aps/:sheet", (req, res) => {
 					listSheet(auth, req.params.sheet)
 						.then((data) => {
@@ -151,14 +163,11 @@ authorize()
 								for (let j = 0; j < data[i].length; j++) {
 									// convert empty string for json use (json deletes entry with empty string)
 									if (data[i][j] === "") data[i][j] = null;
-									else if (data[i][j].endsWith(".jpg") || data[i][j].endsWith(".png")) {
+									else if (data[i][j].includes(".jpg") || data[i][j].includes(".png")) {
 										// convert .png and .jpeg entry with google image export id
 										if (data[i][j].includes(",")) {
-											data[i][j] = data[i][j]
-												.split(", ")
-												.map((e) => picObject[e])
-												.join(", ");
-										} else data[i][j] = picObject[data[i][j]];
+											data[i][j] = data[i][j].split(", ").map(getPicObject).join(", ");
+										} else data[i][j] = getPicObject(data[i][j]);
 									}
 								}
 							}

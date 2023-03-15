@@ -1,4 +1,5 @@
 ---
+import Image from "./Image.astro";
 import Table from "./Table.astro";
 
 const fetchedData = await fetch("http://localhost:5555/aps/Profile%20Cover").then(response => response.json())
@@ -10,16 +11,17 @@ const fetchedData = await fetch("http://localhost:5555/aps/Profile%20Cover").the
     fetchedData.value.slice(1).map((entry: string[], i : number) => (
       <tr>
         <td class={`break-inside-avoid-page ${i < fetchedData.value.length - 1 ? "pb-4" : ""}`}>
-          <div id={entry[0]} class="bg-indigo-900 py-3 px-12 text-white text-lg font-light font-display border-b-4 border-b-indigo-100">
+          <div id={entry[0]} class="bg-indigo-800 py-3 px-12 text-white text-lg font-serif border-b-4 border-b-indigo-100">
             <h1>{entry[0]} </h1>
           </div>
-          <div class="px-12">
-            <div class="grid grid-cols-3 py-4 gap-12">
-              <img class="object-right rounded-xl outline outline-2 outline-indigo-900 aspect-square w-full object-contain bg-white" src={"https://drive.google.com/uc?export=view&id=" + entry[4]} alt={entry[0] + " Image"}>
-              <img class="object-right rounded-xl outline outline-2 outline-indigo-900 aspect-square w-full object-contain bg-white" src={"https://drive.google.com/uc?export=view&id=" + entry[5]} alt={entry[0] + " Drawing"}>
-              <img class="object-right rounded-xl outline outline-2 outline-indigo-900 aspect-square w-full object-contain bg-white" src={"https://drive.google.com/uc?export=view&id=" + entry[6]} alt={entry[0] + " Usage"}>
+          <div class="grid grid-cols-2 px-12">
+            <div class="flex justify-center items-start flex-wrap gap-3 py-4">
+              <Image entry={entry[4]} width="20.75rem"/>
+              <Image entry={entry[5]} />
+              <Image entry={entry[6]} />
             </div>
-            <div class="p-2 bg-indigo-100 rounded-lg">
+            <div class="p-2">
+              <Table sheet={entry[0]} />
               <div class="px-3">
                 <p class="py-1">
                   {entry[1]}
@@ -41,9 +43,6 @@ const fetchedData = await fetch("http://localhost:5555/aps/Profile%20Cover").the
                     </span>
                   </span>
                 </p>
-              </div>
-              <div class="pt-2">
-                <Table sheet={entry[0]} />
               </div>
             </div>
           </div>

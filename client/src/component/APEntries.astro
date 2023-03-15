@@ -1,4 +1,5 @@
 ---
+import Image from "./Image.astro";
 import Table from "./Table.astro";
 
 const { name, separate, printonly, screenonly } = Astro.props
@@ -6,19 +7,13 @@ const { name, separate, printonly, screenonly } = Astro.props
 
 const fetchedData = await fetch(`http://localhost:5555/aps/${name}`).then(response => response.json())
 
-const tableData = {
-  status: fetchedData.status,
-  value: fetchedData.status === "ok"? (fetchedData.value.slice(0, separate? 1 + separate : undefined)) : fetchedData.value
-}
-const secondTableData = {
-  status: fetchedData.status,
-  value: fetchedData.status === "ok"? ([fetchedData.value[0], ...fetchedData.value.slice(separate? 1 + separate : 0)]) : fetchedData.value
-}
+const tableData = fetchedData.value.slice(0, separate? 1 + separate : undefined);
+const secondTableData = [fetchedData.value[0], ...fetchedData.value.slice(separate? 1 + separate : 0)];
 
 ---
 <tr class={`${printonly ? "[@media_only_screen]:!hidden" : screenonly? "[@media_only_print]:!hidden" : ""}`}>
   <td class={"break-inside-avoid-page"}>
-    <div id={name} class="bg-indigo-900 py-3 px-12 text-white text-lg font-light font-display border-b-4 border-b-indigo-100">
+    <div id={name} class="bg-indigo-800 py-3 px-12 text-white text-lg font-serif border-b-4 border-b-indigo-100">
       <h1>{name} </h1>
     </div>
     <div class="px-12">
@@ -26,9 +21,8 @@ const secondTableData = {
       {
         fetchedData.status === "ok"? 
           fetchedData.value.slice(1, separate? 1 + separate : undefined).map((entry: string[], i : number) => (
-            <img class="object-right rounded-xl outline outline-2 outline-indigo-900 aspect-square w-40 object-contain" src={"https://drive.google.com/uc?export=view&id=" + entry[5]} alt={entry[1] + " Image"}>
-            <img class="object-right rounded-xl outline outline-2 outline-indigo-900 aspect-square w-40 object-contain" src={"https://drive.google.com/uc?export=view&id=" + entry[6]} alt={entry[1] + " Drawing"}>
-            
+            <Image entry={entry[5]}/>
+            <Image entry={entry[6] + "(" + entry[0] + ")"} />
           ))
         : 
           <div>Error: {fetchedData.value}</div>
@@ -44,7 +38,7 @@ const secondTableData = {
   separate > 0 ?
   <tr class={`${printonly ? "[@media_only_screen]:!hidden" : screenonly? "[@media_only_print]:!hidden" : ""}`}>
     <td class={"break-inside-avoid-page"}>
-      <div id={name} class="bg-indigo-900 py-3 px-12 text-white text-lg font-light font-display border-b-4 border-b-indigo-100">
+      <div id={name} class="bg-indigo-800 py-3 px-12 text-white text-lg font-serif border-b-4 border-b-indigo-100">
         <h1>{name} </h1>
       </div>
       <div class="px-12">
