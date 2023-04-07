@@ -2,10 +2,10 @@
   const data = await fetch("http://localhost:5555/aps/Table%20Of%20Content").then((response) =>  response.json());
 
   const header = 284;
-  const topmargin = 50;
-  const footer = 100;
+  const topmargin = 53;
+  const footer = 150;
   const categoryExtraHeight = 80;
-  const entryHeight = 120;
+  const entryHeight = 100;
   const pageHeight = 3508;
   const maxHeight = pageHeight - topmargin - header - footer;
   
@@ -38,7 +38,6 @@
 
     })
     currContent.push(categorialContent)
-    console.log(height);
   })
   if (currContent.length > 0) pagedContent.push(currContent);
 
@@ -71,7 +70,7 @@ doublePagedContent.map(
     (
       <tr>
         <td class="break-inside-avoid-page">
-          <div class="flex mt-[50px] px-[140px] gap-16">
+          <div class="flex mt-1 px-3 gap-1">
             {page.map(
               (column : string[][]) => (
                 <div class="w-1/2 flex-shrink-0">
@@ -81,11 +80,11 @@ doublePagedContent.map(
                         category.map(
                           (entry: string, i) => 
                           i === 0 ? 
-                          <div class="font-serif h-[200px] flex items-center pl-8 rounded-2xl bg-indigo-800 text-white text-lg">
+                          <div class="font-serif h-[116px] my-[2rem] flex items-center pl-1 bg-indigo-800 text-white text-[4rem]">
                             <a href={"#" + entry}>{entry}</a>
                           </div>
                           :
-                          <div class="font-sans h-[120px] flex items-center text-base pl-8">
+                          <div class="font-sans h-[100px] flex items-center text-lg pl-1">
                             <a href={"#" + entry}>{entry}</a>
                           </div>
                         )

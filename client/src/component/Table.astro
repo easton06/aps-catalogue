@@ -1,6 +1,6 @@
 ---
-const { raw, sheet, omit_col } = Astro.props;
-const data = raw?? await fetch(`http://localhost:5555/aps/${sheet}`).then((response) =>  response.json());
+const { raw, sheet, omit_col, col } = Astro.props;
+const data = raw?? await fetch(`http://localhost:5555/aps/${sheet}${col !== undefined ? "/" + col : ""}`).then((response) =>  response.json());
 
 var rowspans: number[][] = [];
 
@@ -19,20 +19,19 @@ if (raw !== undefined)
 		rowspans.push(span)
 	}
 else if(data.status !== "error")
-		for(let i = 0; i < data.value[0].length; i++) { //working through columns
-			let span: number[] = [];
-			let row = 1;
-			for(let j = data.value.length - 1; j >= 0; j--) { // counting through rows
-				span = [row, ...span];
-				if(data.value[j][i] === undefined || data.value[j][i] === null) {
-					row++
-				} else {
-					row = 1;
-				}
+	for(let i = 0; i < data.value[0].length; i++) { //working through columns
+		let span: number[] = [];
+		let row = 1;
+		for(let j = data.value.length - 1; j >= 0; j--) { // counting through rows
+			span = [row, ...span];
+			if(data.value[j][i] === undefined || data.value[j][i] === null) {
+				row++
+			} else {
+				row = 1;
 			}
-			rowspans.push(span)
 		}
-
+		rowspans.push(span)
+	}
 
 ---
 

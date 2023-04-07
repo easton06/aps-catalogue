@@ -13,22 +13,22 @@ const secondTableData = [fetchedData.value[0], ...fetchedData.value.slice(separa
 ---
 <tr class={`${printonly ? "[@media_only_screen]:!hidden" : screenonly? "[@media_only_print]:!hidden" : ""}`}>
   <td class={"break-inside-avoid-page"}>
-    <div id={name} class="bg-indigo-800 py-3 px-12 text-white text-lg font-serif border-b-4 border-b-indigo-100">
+    <div id={name} class="bg-indigo-800 py-1 px-4 text-white text-lg font-serif border-b-4 border-b-indigo-100">
       <h1>{name} </h1>
     </div>
-    <div class="px-12">
-      <div class="flex justify-center flex-wrap py-4 gap-3">
+    <div class="px-4">
+      <div class="flex justify-center flex-wrap py-1 gap-1">
       {
         fetchedData.status === "ok"? 
           fetchedData.value.slice(1, separate? 1 + separate : undefined).map((entry: string[], i : number) => (
-            <Image entry={entry[5]}/>
-            <Image entry={entry[6] + "(" + entry[0] + ")"} />
+            <Image entry={entry[5]} width={29} height={29}/>
+            <Image entry={entry[6] + "(" + entry[0] + ")"} width={29} height={29} />
           ))
         : 
           <div>Error: {fetchedData.value}</div>
       }
       </div>
-      <div class="py-2">
+      <div class="py-1">
         <Table raw={tableData} omit_col={2} />
       </div>
     </div>
@@ -38,23 +38,22 @@ const secondTableData = [fetchedData.value[0], ...fetchedData.value.slice(separa
   separate > 0 ?
   <tr class={`${printonly ? "[@media_only_screen]:!hidden" : screenonly? "[@media_only_print]:!hidden" : ""}`}>
     <td class={"break-inside-avoid-page"}>
-      <div id={name} class="bg-indigo-800 py-3 px-12 text-white text-lg font-serif border-b-4 border-b-indigo-100">
+      <div id={name} class="bg-indigo-800 py-1 px-2 text-white text-lg font-serif border-b-4 border-b-indigo-100">
         <h1>{name} </h1>
       </div>
-      <div class="px-12">
-        <div class="flex justify-center [@media_only_screen_and_(max-width:_640px)]:flex-col flex-wrap py-4 gap-3">
+      <div class="px-2">
+        <div class="flex justify-center [@media_only_screen_and_(max-width:_640px)]:flex-col flex-wrap py-1 gap-1">
         {
           fetchedData.status === "ok"? 
             fetchedData.value.slice(1 + separate).map((entry: string[], i : number) => (
-              <img class="object-right rounded-xl outline outline-2 outline-indigo-900 aspect-square w-40 object-contain bg-white" src={"https://drive.google.com/uc?export=view&id=" + entry[5]} alt={entry[1] + " Image"}>
-              <img class="object-right rounded-xl outline outline-2 outline-indigo-900 aspect-square w-40 object-contain bg-white" src={"https://drive.google.com/uc?export=view&id=" + entry[6]} alt={entry[1] + " Drawing"}>
-              
+              <Image entry={entry[5]}/>
+              <Image entry={entry[6] + "(" + entry[0] + ")"} />
             ))
           : 
             <div>Error: {fetchedData.value}</div>
         }
         </div>
-        <div class="py-2">
+        <div class="py-1">
           <Table raw={secondTableData} omit_col={2} />
         </div>
       </div>

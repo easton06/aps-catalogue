@@ -1,5 +1,5 @@
 ---
-const {entry, width} = Astro.props;
+const {entry, width, height} = Astro.props;
 
 let caption = undefined;
 let entryArr = entry.split("(");
@@ -9,9 +9,9 @@ if (entryArr.length > 1) {
 }
 ---
 
-<span class={`-z-10 relative rounded-xl h-40 outline outline-2 outline-indigo-900`} style={`width: ${width?? "10rem"}`}>
-  <div class="absolute right-0 left-0 bottom-1 text-center">
+<div class="-z-10 relative rounded-xl outline outline-2 outline-indigo-900" style={`width: ${width?? 30}rem; height: ${height?? 30}rem`}>
+  <div class="absolute right-0 left-0 bottom-[0.5rem] text-center">
     {caption}
   </div>
-  <img class={`object-center ${caption? "h-36" : "h-40"} object-contain`} style={`width: ${width?? "10rem"}`} src={"https://drive.google.com/uc?export=view&id=" + image} alt={entry}>
-</span>
+  <img class="mx-auto object-center object-contain" style={`width: ${caption? width ? width - 2 : 28 : width??  "30"}rem; height: ${caption? height ? height - 2 : 28 : height?? 30}rem`} src={"https://drive.google.com/uc?export=view&id=" + image} alt={entry}>
+</div>

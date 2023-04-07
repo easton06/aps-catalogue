@@ -163,7 +163,7 @@ authorize()
 								for (let j = 0; j < data[i].length; j++) {
 									// convert empty string for json use (json deletes entry with empty string)
 									if (data[i][j] === "") data[i][j] = null;
-									else if (data[i][j].includes(".jpg") || data[i][j].includes(".png")) {
+									else if (data[i][j].includes(".jpg") || data[i][j].includes(".png") || data[i][j].includes(".webp")) {
 										// convert .png and .jpeg entry with google image export id
 										if (data[i][j].includes(",")) {
 											data[i][j] = data[i][j].split(", ").map(getPicObject).join(", ");
@@ -188,9 +188,11 @@ authorize()
 								for (let j = 0; j < data[i].length; j++) {
 									// convert empty string for json use (json deletes entry with empty string)
 									if (data[i][j] === "") data[i][j] = null;
-									else if (data[i][j].endsWith(".jpg") || data[i][j].endsWith(".png") || data[i][j].endsWith(".webp"))
-										// convert .png and .jpeg entry with google image export id
-										data[i][j] = picObject[data[i][j]];
+									else if (data[i][j].includes(".jpg") || data[i][j].includes(".png") || data[i][j].includes(".webp"))
+										if (data[i][j].includes(",")) {
+											// convert .png and .jpeg entry with google image export id
+											data[i][j] = data[i][j].split(", ").map(getPicObject).join(", ");
+										} else data[i][j] = getPicObject(data[i][j]);
 								}
 							}
 							console.log(data);

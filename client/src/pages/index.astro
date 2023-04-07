@@ -6,6 +6,11 @@ import ProfileCover from "../component/ProfileCover.astro";
 import HingesNAccessories from "../component/HingesNAccessories.astro";
 import GussetElement from "../component/GussetElement.astro";
 import TableOfContent from "../component/TableOfContent.astro";
+import FootMount from "../component/FootMount.astro";
+import SlotNut from "../component/SlotNut.astro";
+import JointNConnector from "../component/JointNConnector.astro";
+import BoltNScrew from "../component/BoltNScrew.astro";
+import FrontCover from "../component/FrontCover.astro";
 ---
 
 <html lang="en">
@@ -16,26 +21,43 @@ import TableOfContent from "../component/TableOfContent.astro";
 		<meta name="generator" content={Astro.generator} />
 		<title>Aluminium Profile System Catalogue</title>
 	</head>
-	<body class="text-[60px] font-sans">
+	<body class="text-sm font-sans">
+		<FrontCover />
 		<Chapter title="Table of Content" />
 		<Page title="Table of Content">
 				<TableOfContent />
 		</Page>
 		<Chapter title="Aluminium Profile"/>
 		<Page title="Aluminium Profile">
-			<!-- <AluminiumProfile /> -->
+			<AluminiumProfile />
 		</Page>
-		<Chapter title="Profile Cover"/>
-		<Page title="Profile Cover">
-			<!-- <ProfileCover /> -->
+		<Chapter title="Slot Nut"/>
+		<Page title="Slot Nut">
+			<SlotNut />
 		</Page>
-		<Chapter title="Panel Hinges & Accessories"/>
-		<Page title="Panel Hinges & Accessories">
-			<!-- <HingesNAccessories /> -->
+		<Chapter title="Bolt & Screw"/>
+		<Page title="Bolt & Screw">
+			<BoltNScrew />
+		</Page>
+		<Chapter title="Joint & Connector"/>
+		<Page title="Joint & Connector">
+			<JointNConnector/>
 		</Page>
 		<Chapter title="Gusset Elements"/>
 		<Page title="Gusset Elements">
-			<!-- <GussetElement /> -->
+			<GussetElement />
+		</Page>
+		<Chapter title="Panel Hinges & Accessories"/>
+		<Page title="Panel Hinges & Accessories">
+			<HingesNAccessories />
+		</Page>
+		<Chapter title="Profile Cover"/>
+		<Page title="Profile Cover">
+			<ProfileCover />
+		</Page>
+		<Chapter title="Foot Mount"/>
+		<Page title="Foot Mount">
+			<FootMount />
 		</Page>
 	</body>
 </html>
@@ -72,7 +94,7 @@ import TableOfContent from "../component/TableOfContent.astro";
 
 	@page {
 		size: 2480px 3508px;
-		margin: 0 0 284px;
+		margin: 0 0 150px;
 	}
 
 	.chapter {

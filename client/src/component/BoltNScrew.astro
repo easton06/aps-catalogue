@@ -2,7 +2,7 @@
 import Image from "./Image.astro";
 import Table from "./Table.astro";
 
-const fetchedData = await fetch("http://localhost:5555/aps/Panel%20Hinges%20&%20Accessories").then(response => response.json())
+const fetchedData = await fetch("http://localhost:5555/aps/Bolt%20&%20Screw").then(response => response.json())
 ---
 
 {
@@ -15,34 +15,31 @@ const fetchedData = await fetch("http://localhost:5555/aps/Panel%20Hinges%20&%20
           </div>
           <div class="px-4 py-1 grid grid-cols-2">
             <div class="flex content-start flex-wrap gap-1">
-              {entry[4].split(", ").map((img : string, i : number) => 
-                <Image entry={img} width={i === 0 && entry[4].split(", ").length % 2 === 1? 63.3 : undefined} />
-              )}
+                <Image entry={entry[3]} />
+                <Image entry={entry[4]} />
             </div>
             <div class="p-1">
               <Table sheet={entry[0]} />
               <div class="p-1">
-                <p class="py-0.5 grid grid-cols-2">
-                  <span class="flex flex-wrap items-center">
-                    Colour: {entry[3].split(", ").map((s: string) => (
-                      <span class={`${s === "Black"? "bg-black" : "bg-slate-400"}  text-white mx-[0.5rem] p-[0.5rem] rounded-full flex-shrink-0`}>
-                        {s}  
-                      </span>
-                    ))}
-                  </span>
+                <p class="py-0.5">
                   <span class="flex flex-wrap items-center">
                       Material: {entry[2].split(", ").map((s: string) => (
-                        <span class={`text-white mx-[0.5rem] p-[0.5rem] rounded-full ${s === "Nylon"? "bg-black" : "bg-slate-400"} flex-shrink-0`}>
+                        <span class={`mx-[0.5rem] p-[0.5rem] rounded-full ${s.startsWith("Nickel Plated Steel") ? "bg-[#eae1da]" : s.startsWith("Zinc Plated Steel") ? "bg-[#e2e3ee]" : "text-white bg-black"} flex-shrink-0`}>
                           {s}
                         </span>
                       ))} 
                   </span>
                 </p>
-                {entry[1].split("\n").map((s: string) => (
-                  <p class="pb-0.5">
-                      {s}
-                  </p>
-                ))}
+                { 
+                  entry[1] !== null ? 
+                    entry[1].split("\n").map((s: string) => (
+                    <p class="pb-0.5">
+                        {s}
+                    </p>
+                    ))
+                  :
+                  <> </>
+                }
               </div>
             </div>
           </div>
