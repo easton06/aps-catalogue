@@ -3,9 +3,9 @@ import AluminiumProfile from "../component/AluminiumProfile.astro";
 import Chapter from "../component/Chapter.astro";
 import Page from "../component/Page.astro";
 import ProfileCover from "../component/ProfileCover.astro";
-import TableOfContent from "../component/TableOfContent.astro";
 import HingesNAccessories from "../component/HingesNAccessories.astro";
 import GussetElement from "../component/GussetElement.astro";
+import TableOfContent from "../component/TableOfContent.astro";
 ---
 
 <html lang="en">
@@ -16,22 +16,22 @@ import GussetElement from "../component/GussetElement.astro";
 		<meta name="generator" content={Astro.generator} />
 		<title>Aluminium Profile System Catalogue</title>
 	</head>
-	<body class="text-xs font-sans">
+	<body class="text-[60px] font-sans">
 		<Chapter title="Table of Content" />
 		<Page title="Table of Content">
-			<!-- <TableOfContent /> -->
+				<TableOfContent />
 		</Page>
 		<Chapter title="Aluminium Profile"/>
 		<Page title="Aluminium Profile">
-			<AluminiumProfile />
+			<!-- <AluminiumProfile /> -->
 		</Page>
 		<Chapter title="Profile Cover"/>
 		<Page title="Profile Cover">
-			<ProfileCover />
+			<!-- <ProfileCover /> -->
 		</Page>
 		<Chapter title="Panel Hinges & Accessories"/>
 		<Page title="Panel Hinges & Accessories">
-			<HingesNAccessories />
+			<!-- <HingesNAccessories /> -->
 		</Page>
 		<Chapter title="Gusset Elements"/>
 		<Page title="Gusset Elements">
@@ -71,8 +71,8 @@ import GussetElement from "../component/GussetElement.astro";
 	}
 
 	@page {
-		size: 210mm 297mm;
-		margin: 0 0 7mm;
+		size: 2480px 3508px;
+		margin: 0 0 284px;
 	}
 
 	.chapter {
@@ -80,7 +80,7 @@ import GussetElement from "../component/GussetElement.astro";
 	}
 
 	@page chapter {
-		size: 210mm 297mm;
+		size: 2480px 3508px;
 		margin: 0;
 	}
 	

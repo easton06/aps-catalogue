@@ -1,34 +1,103 @@
 ---
-const fetchedData = await fetch("http://localhost:5555/aps/Table%20of%20Content").then(response => response.json())
----
-<tr>
-  <td>
-    <div class="grid grid-cols-2 grid-flow-col h-[1123px]">
-      {
-        fetchedData.status === "ok" ? 
-        fetchedData.value.map((category: string[]) => 
-          category.map((s: string, i: number) => 
-            {
-              i === 0 ?
-                <div class="font-serif text-lg">{s}</div>
-              :
-                <div class="font-sans text-">{s}</div>
-            }
-          )
-        )
-        :
-        <div>Error: {fetchedData.value}</div>
+  const data = await fetch("http://localhost:5555/aps/Table%20Of%20Content").then((response) =>  response.json());
+
+  const header = 284;
+  const topmargin = 50;
+  const footer = 100;
+  const categoryExtraHeight = 80;
+  const entryHeight = 120;
+  const pageHeight = 3508;
+  const maxHeight = pageHeight - topmargin - header - footer;
+  
+  let height = 0;
+  let pagedContent: string[][][] = [];
+  let currContent : string[][] = [];
+
+  if(data.status !== "error")
+  data.value.forEach((category: string[]) => {
+    height += categoryExtraHeight + entryHeight;
+
+    // data.value => [[category 1, cat 1 prod 1, 2, 3...],[category 2, cat 2 prod 1, 2, 3...],[category. 3, cat 3 prod 1, 2, 3...]]
+    // currContent => [[category 1, cat 1 prod 1, 2, 3...], [category 2, cat 2 prod 1, 2]]
+    // pagedcontent => [[[category 1, cat 1 prod 1, 2, 3...], [category 2, cat 2 prod 1, 2]], [[category 2, cat 2 prod 3...], [category 3, cat 3 prod 1, 2, 3...]],...]
+    let categorialContent: string[] = [category[0]];
+
+    category.slice(1).forEach((name: string, i: number) => {
+
+      if(height + entryHeight > maxHeight) {
+        if(categorialContent.length > 2) currContent.push(categorialContent);
+        pagedContent.push(currContent)
+        currContent = [];
+        if(category.length - 1 === i) height = 0;
+        else height = categoryExtraHeight + entryHeight;
+        categorialContent = [category[0]];
       }
-      <div class="w-1/2 flex-shrink-0">
-        <div class="bg-blue-100">Test 1</div>
-        <div class="bg-blue-100">Test 2</div>
-        <div class="bg-blue-100">Test 3</div>
-      </div>
-      <div class="w-1/2 flex-shrink-0">
-        <div class="bg-red-100">Test 1</div>
-        <div class="bg-red-100">Test 2</div>
-        <div class="bg-red-100">Test 3</div>
-      </div>
-    </div>
-  </td>
-</tr>
+
+      height += entryHeight;
+      categorialContent.push(name);
+
+    })
+    currContent.push(categorialContent)
+    console.log(height);
+  })
+  if (currContent.length > 0) pagedContent.push(currContent);
+
+  const size = 2;
+  let doublePagedContent : string[][][][] = [];
+
+  // doublePagedContent = [
+  //     [
+  //       [["category 1", "cat 1 prod 1", "2", "3"], ["category 2", "cat 2 prod 1", "2"]], 
+  //       [["category 2", "cat 2 prod 3"], ["category 3", "cat 3 prod 1", "2", "3"]]
+  //     ],
+  //     [
+  //       [["category 4", "cat 4 prod 1", "2", "3"], ["category 5", "cat 5 prod 1", "2"]], 
+  //       [["category 5", "cat 5 prod 3"], ["category 6", "cat 6 prod 1", "2", "3"]]
+  //     ],
+  //   ]
+  for (let i = 0; i < pagedContent.length; i++) {
+    if (i % size === 0) {
+      doublePagedContent.push([pagedContent[i]]);
+    }
+    else {
+      doublePagedContent[doublePagedContent.length - 1].push(pagedContent[i]);
+    };
+  };
+---
+
+{
+doublePagedContent.map(
+  (page: string[][][], i: number) => 
+    (
+      <tr>
+        <td class="break-inside-avoid-page">
+          <div class="flex mt-[50px] px-[140px] gap-16">
+            {page.map(
+              (column : string[][]) => (
+                <div class="w-1/2 flex-shrink-0">
+                  {
+                    column.map(
+                      (category: string[]) => (
+                        category.map(
+                          (entry: string, i) => 
+                          i === 0 ? 
+                          <div class="font-serif h-[200px] flex items-center pl-8 rounded-2xl bg-indigo-800 text-white text-lg">
+                            <a href={"#" + entry}>{entry}</a>
+                          </div>
+                          :
+                          <div class="font-sans h-[120px] flex items-center text-base pl-8">
+                            <a href={"#" + entry}>{entry}</a>
+                          </div>
+                        )
+                      )
+                    )
+                  }
+                </div>
+              )
+            )}
+          </div>
+        </td>
+      </tr>
+    )
+)
+}
