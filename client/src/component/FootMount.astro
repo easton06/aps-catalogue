@@ -16,7 +16,7 @@ const fetchedData = await fetch("http://localhost:5555/aps/Foot%20Mount").then(r
           <div class="px-4 py-1 grid grid-cols-2">
             <div class="flex content-start flex-wrap gap-1">
               {entry[3].split(", ").map((img : string, i : number) => 
-                <Image entry={img} width={i === 0 && entry[3].split(", ").length % 2 === 1? 63.3 : undefined} />
+                <Image entry={img} width={i === 0 && entry[3].split(", ").length % 2 === 1? 67.3 : undefined} />
               )}
             </div>
             <div class="p-1">
