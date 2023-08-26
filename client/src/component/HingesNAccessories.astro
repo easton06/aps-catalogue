@@ -13,7 +13,7 @@ const fetchedData = await fetch("http://localhost:5555/aps/Panel%20Hinges%20&%20
           <div id={entry[0]} class="bg-indigo-800 py-1 px-4 text-white text-lg font-serif border-b-4 border-b-indigo-100">
             <h1>{entry[0]} </h1>
           </div>
-          <div class="px-4 py-1 grid grid-cols-2">
+          <div class="px-3 py-1 grid grid-cols-2">
             <div class="flex content-start flex-wrap gap-1">
               {entry[4].split(", ").map((img : string, i : number) => 
                 <Image entry={img} width={i === 0 && entry[4].split(", ").length % 2 === 1? 67.3 : undefined} />

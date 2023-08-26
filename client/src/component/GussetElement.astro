@@ -13,7 +13,7 @@ const fetchedData = await fetch("http://localhost:5555/aps/Gusset%20Element").th
           <div id={entry[1]} class="bg-indigo-800 py-1 px-4 text-white text-lg font-serif border-b-4 border-b-indigo-100">
             <h1>{entry[1]} </h1>
           </div>
-          <div class="grid grid-cols-2 px-4 py-1">
+          <div class="grid grid-cols-2 px-3 py-1">
             <div class="flex content-start flex-wrap gap-1">
               <Image entry={entry[4]} />
               <Image entry={entry[5] + "(" + entry[0] + ")"} />
