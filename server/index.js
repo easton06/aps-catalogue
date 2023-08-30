@@ -156,53 +156,68 @@ authorize()
 					else return picObject[s];
 				}
 
-				app.get("/aps/:sheet", (req, res) => {
-					listSheet(auth, req.params.sheet)
-						.then((data) => {
-							for (let i = 0; i < data.length; i++) {
-								for (let j = 0; j < data[i].length; j++) {
-									// convert empty string for json use (json deletes entry with empty string)
-									if (data[i][j] === "") data[i][j] = null;
-									else if (data[i][j].includes(".jpg") || data[i][j].includes(".png") || data[i][j].includes(".webp")) {
-										// convert .png and .jpeg entry with google image export id
-										if (data[i][j].includes(",")) {
-											data[i][j] = data[i][j].split(", ").map(getPicObject).join(", ");
-										} else data[i][j] = getPicObject(data[i][j]);
-									}
-								}
-							}
-							console.log(data);
+				// caches data in server to counter quota limit exceed in Google Sheet APIs //
+				let hashmapCache = {};
 
-							res.status(200).send({ status: "ok", value: data });
-						})
-						.catch((e) => {
-							if (e["code"] !== undefined) res.status(e["code"]).send({ status: "error", value: e.errors[0].message });
-							console.error(e);
-						});
+				function getProcessedData(data) {
+					let finalData = data;
+					for (let i = 0; i < finalData.length; i++) {
+						for (let j = 0; j < finalData[i].length; j++) {
+							// convert empty string for json use (json deletes entry with empty string)
+							if (finalData[i][j] === "") finalData[i][j] = null;
+							else if (
+								finalData[i][j].includes(".jpg") ||
+								finalData[i][j].includes(".png") ||
+								finalData[i][j].includes(".webp")
+							)
+								if (finalData[i][j].includes(",")) {
+									// convert .png and .jpeg entry with google image export id
+									finalData[i][j] = finalData[i][j].split(", ").map(getPicObject).join(", ");
+								} else finalData[i][j] = getPicObject(finalData[i][j]);
+						}
+					}
+					console.log(data);
+					return finalData;
+				}
+
+				app.get("/aps/:sheet", (req, res) => {
+					if (hashmapCache[req.params.sheet] === undefined)
+						listSheet(auth, req.params.sheet)
+							.then((data) => {
+								let processedData = getProcessedData(data);
+								hashmapCache[req.params.sheet] = processedData;
+
+								res.status(200).send({ status: "ok", value: processedData });
+							})
+							.catch((e) => {
+								if (e["code"] !== undefined)
+									res.status(e["code"]).send({ status: "error", value: e.errors[0].message });
+								console.error(e);
+							});
+					else {
+						console.log("cache hit!");
+						res.status(200).send({ status: "ok", value: hashmapCache[req.params.sheet] });
+					}
 				});
 
 				app.get("/aps/:sheet/:col", (req, res) => {
-					listSheet(auth, req.params.sheet, req.params.col)
-						.then((data) => {
-							for (let i = 0; i < data.length; i++) {
-								for (let j = 0; j < data[i].length; j++) {
-									// convert empty string for json use (json deletes entry with empty string)
-									if (data[i][j] === "") data[i][j] = null;
-									else if (data[i][j].includes(".jpg") || data[i][j].includes(".png") || data[i][j].includes(".webp"))
-										if (data[i][j].includes(",")) {
-											// convert .png and .jpeg entry with google image export id
-											data[i][j] = data[i][j].split(", ").map(getPicObject).join(", ");
-										} else data[i][j] = getPicObject(data[i][j]);
-								}
-							}
-							console.log(data);
+					if (hashmapCache[req.params.sheet] === undefined)
+						listSheet(auth, req.params.sheet, req.params.col)
+							.then((data) => {
+								let processedData = getProcessedData(data);
+								hashmapCache[req.params.sheet] = processedData;
 
-							res.status(200).send({ status: "ok", value: data });
-						})
-						.catch((e) => {
-							if (e["code"] !== undefined) res.status(e["code"]).send({ status: "error", value: e.errors[0].message });
-							console.error(e);
-						});
+								res.status(200).send({ status: "ok", value: processedData });
+							})
+							.catch((e) => {
+								if (e["code"] !== undefined)
+									res.status(e["code"]).send({ status: "error", value: e.errors[0].message });
+								console.error(e);
+							});
+					else {
+						console.log("cache hit!");
+						res.status(200).send({ status: "ok", value: hashmapCache[req.params.sheet] });
+					}
 				});
 
 				app.listen(port, () => {
