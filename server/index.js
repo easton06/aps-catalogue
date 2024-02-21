@@ -1,4 +1,5 @@
-const fs = require("fs").promises;
+const fsPromises = require("fs").promises;
+const fs = require("fs");
 const path = require("path");
 const process = require("process");
 const { authenticate } = require("@google-cloud/local-auth");
@@ -10,10 +11,7 @@ const app = express();
 app.use(express.json());
 
 // If modifying these scopes, delete token.json.
-const SCOPES = [
-	"https://www.googleapis.com/auth/spreadsheets.readonly",
-	"https://www.googleapis.com/auth/drive.metadata.readonly",
-];
+const SCOPES = ["https://www.googleapis.com/auth/spreadsheets.readonly", "https://www.googleapis.com/auth/drive"];
 // The file token.json stores the user's access and refresh tokens, and is
 // created automatically when the authorization flow completes for the first
 // time.
@@ -27,7 +25,7 @@ const CREDENTIALS_PATH = path.join(process.cwd(), "credentials.json");
  */
 async function loadSavedCredentialsIfExist() {
 	try {
-		const content = await fs.readFile(TOKEN_PATH);
+		const content = await fsPromises.readFile(TOKEN_PATH);
 		const credentials = JSON.parse(content);
 		return google.auth.fromJSON(credentials);
 	} catch (err) {
@@ -42,7 +40,7 @@ async function loadSavedCredentialsIfExist() {
  * @return {Promise<void>}
  */
 async function saveCredentials(client) {
-	const content = await fs.readFile(CREDENTIALS_PATH);
+	const content = await fsPromises.readFile(CREDENTIALS_PATH);
 	const keys = JSON.parse(content);
 	const key = keys.installed || keys.web;
 	const payload = JSON.stringify({
@@ -51,7 +49,7 @@ async function saveCredentials(client) {
 		client_secret: key.client_secret,
 		refresh_token: client.credentials.refresh_token,
 	});
-	await fs.writeFile(TOKEN_PATH, payload);
+	await fsPromises.writeFile(TOKEN_PATH, payload);
 }
 
 /**
@@ -95,66 +93,57 @@ async function listSheet(auth, sheet, col) {
 	return rows;
 }
 
-/**
- * Lists the names and IDs of a specified folder with ID
- * @param {OAuth2Client} authClient An authorized OAuth2 client.
- * @param {string} folderId id of the folder of the files parents to
- * @returns {drive_v3.Schema$File[] | undefined}
- */
-async function listFiles(authClient, folderId) {
-	const drive = google.drive({ version: "v3", auth: authClient });
-	const res = await drive.files.list({
-		fields: "nextPageToken, files(id, name)",
-		q: `'${folderId}' in parents and trashed = false`,
-	});
-	const files = res.data.files;
-	if (files.length === 0) {
-		console.log("No files found.");
-		return undefined;
-	} else {
-		return files;
-	}
-}
-
 authorize()
 	.then((auth) => {
-		listFiles(auth, "1AU0YvPpzdqHpiHblPfHrhEA-B4soIB--").then(async (picFolders) => {
+		const drive = google.drive({ version: "v3", auth });
+
+		/**
+		 * Lists the names and IDs of a specified folder with ID
+		 * @param {string} folderId id of the folder of the files parents to
+		 * @returns {drive_v3.Schema$File[] | undefined}
+		 */
+		async function listFiles(folderId) {
+			const res = await drive.files.list({
+				fields: "nextPageToken, files(id, name)",
+				q: `'${folderId}' in parents and trashed = false`,
+			});
+			const files = res.data.files;
+			if (files.length === 0) {
+				console.log("No files found.");
+				return undefined;
+			} else {
+				return files;
+			}
+		}
+
+		listFiles("1AU0YvPpzdqHpiHblPfHrhEA-B4soIB--").then(async (picFolders) => {
 			console.log(picFolders);
 			if (picFolders !== undefined) {
-				var picFiles = [];
 				await Promise.all(
 					picFolders.map(async (curr) => {
-						await listFiles(auth, curr.id).then((files) => {
-							picFiles = files.length
-								? picFiles.length
-									? [...files, ...picFiles]
-									: [...files]
-								: picFiles.length
-								? [...picFiles]
-								: [];
+						await listFiles(curr.id).then((files) => {
+							files.map(async (currFile) => {
+								try {
+									const dest = fs.createWriteStream("../client/public/pictures/" + currFile.name);
+									drive.files.get({ fileId: currFile.id, alt: "media" }, { responseType: "stream" }).then((r) => {
+										r.data
+											.on("end", () => {
+												console.log("Downloaded " + currFile.name);
+											})
+											.on("error", (err) => {
+												console.error("Error downloading file", err);
+											})
+											.pipe(dest);
+									});
+								} catch (error) {
+									console.error("Error downloading " + currFile.name, error);
+								}
+							});
 						});
 					})
 				);
 
-				const picObject = picFiles.reduce((previousObject, currentObject) => {
-					return Object.assign(previousObject, {
-						[currentObject.name]: currentObject.id,
-					});
-				}, {});
-				console.log(picObject);
 				const port = 5555;
-
-				/**
-				 * convert .png and .jpeg entry with google image export id
-				 * e.g. RBN20_img.jpg(PS20_RBNS4-6) -> {export_id}(PS20_RBNS4-6)
-				 * @param {string} s the entry to convert
-				 * @returns {string} picObject
-				 */
-				function getPicObject(s) {
-					const b = s.indexOf("(");
-					if (b >= 0) return picObject[s.slice(0, b)] + s.slice(b);
-					else return picObject[s];
-				}
 
 				// caches data in server to counter quota limit exceed in Google Sheet APIs //
 				let hashmapCache = {};
@@ -165,15 +154,6 @@ authorize()
 						for (let j = 0; j < finalData[i].length; j++) {
 							// convert empty string for json use (json deletes entry with empty string)
 							if (finalData[i][j] === "") finalData[i][j] = null;
-							else if (
-								finalData[i][j].includes(".jpg") ||
-								finalData[i][j].includes(".png") ||
-								finalData[i][j].includes(".webp")
-							)
-								if (finalData[i][j].includes(",")) {
-									// convert .png and .jpeg entry with google image export id
-									finalData[i][j] = finalData[i][j].split(", ").map(getPicObject).join(", ");
-								} else finalData[i][j] = getPicObject(finalData[i][j]);
 						}
 					}
 					console.log(data);
